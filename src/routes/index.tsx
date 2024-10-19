@@ -1,9 +1,8 @@
 import React from 'react';
 import { createBrowserRouter } from "react-router-dom";
-
-const Home = React.lazy(() => import('@/screens/Home'));
-const Document = React.lazy(() => import('@/screens/Document'));
-const Error = React.lazy(() => import('@/screens/Error'));
+import Home from '@/screens/Home';
+import Document from '@/screens/Document';
+import Error from '@/screens/Error';
 
 const router = createBrowserRouter([
   {
