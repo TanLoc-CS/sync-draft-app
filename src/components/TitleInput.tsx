@@ -1,18 +1,12 @@
 import React, { useState } from 'react'
 
 interface TitleInputProps {
-  callback: (term: string) => void
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
+  value: string
 }
 
-const TitleInput: React.FC<TitleInputProps> = ({callback}) => {
+const TitleInput: React.FC<TitleInputProps> = ({ onChange, value}) => {
   const [focus, setFocus] = useState<boolean>(false);
-  const [value, setValue] = useState<string>('Untitled')
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // e.preventDefault();
-    setValue(e.target.value);
-    callback(value);
-  }
 
   return (
     <input
@@ -20,7 +14,7 @@ const TitleInput: React.FC<TitleInputProps> = ({callback}) => {
       placeholder={'Untitled document'}
       className="w-[480px] h-[48px] ml-4 p-2 bg-white box-border rounded-lg outline-hidden text-2xl truncate font-semibold"
       value={value}
-      onChange={handleChange}
+      onChange={onChange}
       onFocus={() => setFocus(true)}
       onBlur={() => setFocus(false)}
     />
