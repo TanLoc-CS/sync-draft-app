@@ -9,7 +9,7 @@ interface IconProps {
 const ToggleSidebarIcon: React.FC<IconProps> = ({
   width = 24,
   height = 24,
-  fill = '#fff',
+  fill = '#000',
 }) => {
   return (
     <svg
