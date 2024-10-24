@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
-import Button, { ButtonSize } from '@/components/Button';
+import Button, { ButtonColor, ButtonSize } from '@/components/Button';
 import SearchInput from '@/components/SearchInput';
 
 import { PlusIcon } from '@/assets/icons';
@@ -39,6 +39,10 @@ const Home = () => {
   const [sharedDocs, setSharedDocs] = useState<IDocument[]>(sharedDocuments);
   const [searchTerm, setSearchTerm] = useState<string>('')
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  }
+
   const filterDocs = () => {
     if (activeTab === 'mine') {
       return myDocs.filter(doc => ( searchTerm !== ''?
@@ -59,8 +63,8 @@ const Home = () => {
       </header>
       <main>
         <div className='w-[600px] h-auto mt-4 flex flex-row justify-between items-center'>
-          <SearchInput callback={setSearchTerm} />
-          <Button label='New document' icon={<PlusIcon/>} size={ButtonSize.lg} onClick={() => console.log('New document')}/>
+          <SearchInput value={searchTerm} onChange={handleSearchChange} />
+          <Button label='New document' icon={<PlusIcon fill='white'/>} size={ButtonSize.lg} color={ButtonColor.black} onClick={() => console.log('New document')}/>
         </div>
 
         {/*Tabs toggle*/}
