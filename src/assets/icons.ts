@@ -11,6 +11,8 @@ import CloseIcon from '@/assets/icons/CloseIcon';
 import CompareIcon from '@/assets/icons/CompareIcon';
 import LeftArrowIcon from '@/assets/icons/LeftArrowIcon';
 import DownArrowIcon from '@/assets/icons/DownArrowIcon';
+import EditingIcon from '@/assets/icons/EditingIcon';
+import ClockIcon from '@/assets/icons/ClockIcon';
 
 export {
   DocumentIcon,
@@ -25,5 +27,7 @@ export {
   CloseIcon,
   CompareIcon,
   LeftArrowIcon,
-  DownArrowIcon
+  DownArrowIcon,
+  EditingIcon,
+  ClockIcon
 };

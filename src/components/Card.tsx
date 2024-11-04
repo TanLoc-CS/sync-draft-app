@@ -15,7 +15,7 @@ const Card: React.FC<CardProps> = ({
   sharedBy=null
 }) => {
   return (
-    <Link to={`/${docId}`} className='w-[260px] h-[120px] p-6 border border-gray-300 rounded-lg flex flex-col justify-between'>
+    <Link to={`/document/${docId}`} className='w-[260px] h-[120px] p-6 border border-gray-300 rounded-lg flex flex-col justify-between'>
       <div className='w-full h-auto flex flex-row justify-between'>
         <div className='w-[180px] h-[48px] truncate font-semibold'>{title}</div>
         {!sharedBy && <DocumentIcon fill='#6b7280'/>}
