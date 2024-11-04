@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import Modal from 'react-modal';
+import Select from 'react-select';
 
 import { BranchIcon, CloseIcon, CompareIcon, DocumentIcon, HomeIcon, LeftArrowIcon, MergeIcon, ShareIcon } from '@/assets/icons';
-import Button, { ButtonColor, ButtonSize } from '@/components/Button';
 import TitleInput from '@/components/TitleInput';
 import Editor from '@/components/Editor';
 import { UserBubble } from '@/components/UserBubble';
-
-import 'react-quill/dist/quill.snow.css';
 import Draft, { DraftProps } from '@/components/Draft';
 import Merge from '@/components/Merge';
-import Modal from 'react-modal';
-import Select from 'react-select';
+import { Button } from '@/components/ui/button';
+
+import 'react-quill/dist/quill.snow.css';
 
 const collaborators = [
   { userId: '1', name: 'one'},
@@ -73,7 +73,7 @@ const Document = () => {
       alert('Failed to share link! Please try again later...');
       return;
     }
-    navigator.clipboard.writeText(`${docId}`);
+    navigator.clipboard.writeText(`http://localhost:5173/document/${docId}`);
     alert('Copied link to this document!');
   }
 
@@ -84,7 +84,9 @@ const Document = () => {
           {/*Compare differences tittle*/}
           <div className='grow-0 w-full h-fit flex flex-row justify-between items-center'>
             <h1 className='text-[20px] font-semibold'>Compare differences</h1>
-            <Button size={ButtonSize.sm} icon={<CloseIcon/>} onClick={closeMergeModal}/>
+            <Button variant="ghost" size="icon" onClick={closeMergeModal}>
+              <CloseIcon/>
+            </Button>
           </div>
           <p className='grow-0 text-gray-500'>
             Review the differences between your draft and the main version before merging.
@@ -119,8 +121,12 @@ const Document = () => {
             </div>
           {/*Confirm + Cancel buttons */}
           <div className='grow-0 w-full h-fit flex flex-row-reverse justify-start items-center'>
-            <Button className='ml-4' label='Confirm' color={ButtonColor.black} onClick={handleConfirmMerge}/>
-            <Button label='Cancel' color={ButtonColor.white} onClick={closeMergeModal}/>
+            <Button className='ml-4' onClick={handleConfirmMerge}>
+              Confirm
+            </Button>
+            <Button variant="outline" onClick={closeMergeModal}>
+              Cancel
+            </Button>
           </div>
         </div>
       </Merge>
@@ -130,7 +136,10 @@ const Document = () => {
         <div className='w-full h-[60px] flex flex-row justify-between items-center'>
           {/*Home + Title*/}
           <div className='w-4/5 h-[48px] flex flex-row justify-start items-center'>
-            <Button label='Home' icon={<HomeIcon fill='black'/>} size={ButtonSize.md} onClick={() => navigate('/')}/>
+            <Button variant="ghost" size="lg" onClick={() => navigate('/document')}>
+              <HomeIcon/>
+              Home
+            </Button>
             <TitleInput value={docTitle} onChange={handleTitleChange}/>
           </div>
           {/*Collaborators*/}
@@ -142,14 +151,26 @@ const Document = () => {
         {/*Editor*/}
         <Editor onChange={handleEditorChange} content={content}/>
       </div>
-
+      <aside/>
         {/*Left sidebar section*/}
       <div className='w-1/5 h-full p-4 bg-gray-100 flex flex-col justify-start'>
         <div className='grow-0 w-full h-[168px] flex flex-col justify-between items-center'>
-          <Button label='Return to Main' icon={<DocumentIcon />} size={ButtonSize.lg} onClick={() => console.log('main')}/>
-          <Button label='Share document' icon={<ShareIcon />} size={ButtonSize.lg} onClick={handleShare}/>
-          <Button label='Create new Draft' icon={<BranchIcon />} size={ButtonSize.lg} onClick={() => console.log('main')}/>
-          <Button label='Merge Draft' icon={<MergeIcon />} size={ButtonSize.lg} onClick={openMergeModal}/>
+          <Button className='w-full' variant="outline" size="lg" onClick={() => console.log('main')}>
+            <DocumentIcon />
+            Return to Main
+          </Button>
+          <Button className='w-full' variant="outline" size="lg" onClick={handleShare}>
+            <ShareIcon />
+            Share document
+          </Button>
+          <Button className='w-full' variant="outline" size="lg" onClick={() => console.log('main')}>
+            <BranchIcon />
+            Create new Draft
+          </Button>
+          <Button className='w-full' variant="outline" size="lg" onClick={openMergeModal}>
+            <MergeIcon />
+            Merge Draft
+          </Button>
         </div>
 
         <div className='grow-0 w-full h-[28px] mt-4 text-[20px] font-semibold'>Draft version</div>

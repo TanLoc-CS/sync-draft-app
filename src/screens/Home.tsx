@@ -1,99 +1,147 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth0 } from "@auth0/auth0-react";
+import { Search, FileText, Users, LogOut } from 'lucide-react';
 
-import Button, { ButtonColor, ButtonSize } from '@/components/Button';
-import SearchInput from '@/components/SearchInput';
-
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusIcon } from '@/assets/icons';
-import Card from '@/components/Card';
-
-export interface IDocument {
-  id: string,
-  title: string,
-  sharedBy?: string
-}
+import Logo from '@/components/Logo';
 
 // Placeholder data for documents
 const myDocuments = [
-  { id: '1', title: 'Research Paper Draft' },
-  { id: '2', title: 'Literature Review' },
-  { id: '3', title: 'Project Proposal' },
-  { id: '1', title: 'Research Paper Draft' },
-  { id: '2', title: 'Literature Review' },
-  { id: '3', title: 'Project Proposal' },
-  { id: '1', title: 'Research Paper Draft' },
-  { id: '2', title: 'Literature Review' },
-  { id: '3', title: 'Project Proposal' },
-  { id: '1', title: 'Research Paper Draft' },
-  { id: '2', title: 'Literature Review' },
-  { id: '3', title: 'Project Proposal' },
+  { id: '1', title: 'Research Paper Draft', lastEdited: '2 hours ago', isDraft: true },
+  { id: '2', title: 'Literature Review', lastEdited: '1 day ago', isDraft: true },
+  { id: '3', title: 'Project Proposal', lastEdited: '3 days ago', isDraft: false },
 ]
 
 const sharedDocuments = [
-  { id: '4', title: 'Team Meeting Notes', sharedBy: 'John Doe' },
-  { id: '5', title: 'Collaborative Study', sharedBy: 'Jane Smith' },
+  { id: '4', title: 'Team Meeting Notes', sharedBy: 'John Doe', lastEdited: '5 hours ago' },
+  { id: '5', title: 'Collaborative Study', sharedBy: 'Jane Smith', lastEdited: '2 days ago' },
 ]
 
-const Home = () => {
-  const [activeTab, setActiveTab] = useState<string>('mine');
-  const [myDocs, setMyDocs] = useState<IDocument[]>(myDocuments);
-  const [sharedDocs, setSharedDocs] = useState<IDocument[]>(sharedDocuments);
-  const [searchTerm, setSearchTerm] = useState<string>('')
+export default function Home() {
+  const { logout, getAccessTokenSilently } = useAuth0();
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
+  const [searchTerm, setSearchTerm] = useState('')
+
+  useEffect(() => {
+    const check = async () => {
+      const token = await getAccessTokenSilently();
+      console.log(token);
+    }
+
+    check();
+  })
+
+  const handleLogout = () => {
+    logout({ logoutParams: { returnTo: window.location.origin } })
   }
 
-  const filterDocs = () => {
-    if (activeTab === 'mine') {
-      return myDocs.filter(doc => ( searchTerm !== ''?
-        doc.title.toLowerCase().includes(searchTerm.toLowerCase()) :
-        true
-      ));
-    };
+  const createNewDocument = () => {
+    // Placeholder for document creation functionality
+    alert('Creating a new document')
+  }
 
-    return sharedDocs.filter(doc => 
+  const mergeDraft = (docId: string) => {
+    // Placeholder for merge functionality
+    alert(`Merging draft ${docId} into main version`)
+  }
+
+  const filterDocuments = (docs: any) => {
+    return docs.filter((doc: any) => 
       doc.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  };
+    )
+  }
 
   return (
-    <div className='container h-screen p-4 flex flex-col justify-start items-center'>
-      <header className='w-full h-auto flex flex-row justify-start items-center'>
-        <h1 className='text-[40px] font-bold'>Sync Draft</h1>
-      </header>
-      <main>
-        <div className='w-[600px] h-auto mt-4 flex flex-row justify-between items-center'>
-          <SearchInput value={searchTerm} onChange={handleSearchChange} />
-          <Button label='New document' icon={<PlusIcon fill='white'/>} size={ButtonSize.lg} color={ButtonColor.black} onClick={() => console.log('New document')}/>
+    <div className='container h-screen p-4 flex flex-col justify-start items-start'>
+      <div className='w-full flex flex-row justify-between items-center'>
+        <Logo />
+        <Button onClick={handleLogout}>
+          <LogOut />
+          Logout
+        </Button>
+      </div>
+      <div className="container mx-auto p-4 max-w-4xl">
+        <header className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">My Documents</h1>
+        </header>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="md:col-span-2">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search documents"
+                className="pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+          <Button onClick={createNewDocument} className="w-full">
+            <PlusIcon/>
+            New Document
+          </Button>
         </div>
 
-        {/*Tabs toggle*/}
-        <div className='w-[600px] h-[48px] bg-gray-200 rounded-lg flex flex-row justify-evenly items-center mt-4'>
-          <div 
-            className={`w-[280px] h-[32px] rounded-lg flex justify-center items-center cursor-pointer ${activeTab === 'mine'? 'bg-white':'bg-transparent text-gray-500'}`}
-            onClick={() => setActiveTab('mine')}
-          >
-            My documents
-          </div>
-          <div 
-            className={`w-[280px] h-[32px] rounded-lg flex justify-center items-center cursor-pointer ${activeTab === 'shared'? 'bg-white':'bg-transparent text-gray-500'}`}
-            onClick={() => setActiveTab('shared')}
-          >
-            Shared with me
-          </div>
-        </div>
+        <Tabs defaultValue="my-documents" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="my-documents">My Documents</TabsTrigger>
+            <TabsTrigger value="shared-with-me">Shared with Me</TabsTrigger>
+          </TabsList>
 
-        {/*Cards Grid*/}
-        <div className='w-[600px] h-[720px] overflow-y-scroll mt-4 grid grid-cols-2 gap-4 justify-items-center content-start'>
-          {filterDocs().map(doc => (
-            !doc.sharedBy?
-              (<Card docId={doc.id} title={doc.title} key={Math.random()}/>) :
-              (<Card docId={doc.id} title={doc.title} sharedBy={doc.sharedBy} key={Math.random()}/>)
-          ))}
-        </div>
-      </main>
+          <TabsContent value="my-documents">
+            <ScrollArea className="h-[60vh]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {filterDocuments(myDocuments).map((doc: any) => (
+                  <Link to={`/document/${doc.id}`}>
+                    <Card key={doc.id} className='hover:bg-gray-200'>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium hover:underline">
+                            {doc.title}
+                        </CardTitle>
+                        <FileText className="h-4 w-4 text-muted-foreground"/>
+                      </CardHeader>
+                      <CardContent>
+                        <CardDescription>Last edited {doc.lastEdited}</CardDescription>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </ScrollArea>
+          </TabsContent>
+          <TabsContent value="shared-with-me">
+            <ScrollArea className="h-[60vh]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {filterDocuments(sharedDocuments).map((doc: any) => (
+                  <Link to={`/document/${doc.id}`}>
+                    <Card key={doc.id} className='hover:bg-gray-200'>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                            {doc.title}
+                        </CardTitle>
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <CardDescription>
+                          Shared by {doc.sharedBy} • Last edited {doc.lastEdited}
+                        </CardDescription>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </ScrollArea>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   )
-};
-
-export default Home;
+}
