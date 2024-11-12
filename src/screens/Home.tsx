@@ -1,60 +1,92 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth0 } from "@auth0/auth0-react";
-import { Search, FileText, Users, LogOut } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, FileText, Users, LogOut, Plus } from 'lucide-react';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusIcon } from '@/assets/icons';
 import Logo from '@/components/Logo';
-
-// Placeholder data for documents
-const myDocuments = [
-  { id: '1', title: 'Research Paper Draft', lastEdited: '2 hours ago', isDraft: true },
-  { id: '2', title: 'Literature Review', lastEdited: '1 day ago', isDraft: true },
-  { id: '3', title: 'Project Proposal', lastEdited: '3 days ago', isDraft: false },
-]
-
-const sharedDocuments = [
-  { id: '4', title: 'Team Meeting Notes', sharedBy: 'John Doe', lastEdited: '5 hours ago' },
-  { id: '5', title: 'Collaborative Study', sharedBy: 'Jane Smith', lastEdited: '2 days ago' },
-]
+import useAuth from '@/hook/useAuth';
+import useProfile from '@/hook/useProfile';
+import useDocument from '@/hook/useDocument';
+import { Document } from '@/types/document';
+import { toTime } from '@/lib/utils';
 
 export default function Home() {
-  const { logout, getAccessTokenSilently } = useAuth0();
+  const navigate = useNavigate();
+  const { logout, getToken } = useAuth();
+  const { createDocument, getDocuments, documentErr } = useDocument();
+  const { createUserProfile, getUserProfile, noProfile } = useProfile();
 
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [whose, setWhose] = useState<string>('mine');
+  const [reload, setReload] = useState<boolean>(false);
+  const [docs, setDocs] = useState<Document[]>([]);
+  // let doc1 = automerge.from({ content: "" })
+  // doc1 = automerge.change(doc1, d => {
+  //   d.content += "<p>This is a <span style='color: red;'>test</span></p>"
+  // })
+
+  // let doc2 = automerge.from({ content: ""})
+  // doc2 = automerge.change(doc2, d => {
+  //   d.content += "<p>This is a <span style='color: blue;'>test <em>document</em></span></p>"
+  // })
+
+  // console.log(automerge.merge(doc2, doc1).content);
+
 
   useEffect(() => {
-    const check = async () => {
-      const token = await getAccessTokenSilently();
-      console.log(token);
+    const refresh = async () => {
+      const myDocs = await getDocuments(whose);
+      console.log(myDocs)
+      if (myDocs) {
+        setDocs(myDocs);
+      }
     }
 
-    check();
-  })
+    refresh();
+  }, [reload, whose])
+
+
+  useEffect(() => {
+    const checkProfile = async () => {
+      const checkProfile = await getUserProfile();
+
+      if (!checkProfile && noProfile) {
+        await createUserProfile();
+      }
+    }
+
+    checkProfile();
+  }, [noProfile]);
+
 
   const handleLogout = () => {
     logout({ logoutParams: { returnTo: window.location.origin } })
   }
 
-  const createNewDocument = () => {
-    // Placeholder for document creation functionality
-    alert('Creating a new document')
+  const createNewDocument = async () => {
+    const newDoc = await createDocument();
+    if (documentErr || !newDoc || !newDoc._id) {
+      alert(`Error: ${documentErr}`)
+      return;
+    }
+    alert('Created a new document');
+    setReload(!reload);
+    navigate(`/document/${newDoc._id}`)
   }
 
-  const mergeDraft = (docId: string) => {
-    // Placeholder for merge functionality
-    alert(`Merging draft ${docId} into main version`)
-  }
-
-  const filterDocuments = (docs: any) => {
-    return docs.filter((doc: any) => 
-      doc.title.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+  const filterDocuments = (docs: Document[]) => {
+    //TODO: Fix filter
+    // if (!docs) {
+    //   return [];
+    // }
+    // return docs.filter((doc: Document) => 
+    //   doc.title.toLowerCase().includes(searchTerm.toLowerCase())
+    // )
+    return docs;
   }
 
   return (
@@ -85,31 +117,31 @@ export default function Home() {
             </div>
           </div>
           <Button onClick={createNewDocument} className="w-full">
-            <PlusIcon/>
+            <Plus/>
             New Document
           </Button>
         </div>
 
         <Tabs defaultValue="my-documents" className="space-y-4">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="my-documents">My Documents</TabsTrigger>
-            <TabsTrigger value="shared-with-me">Shared with Me</TabsTrigger>
+            <TabsTrigger value="my-documents" onClick={() => setWhose('mine')}>My Documents</TabsTrigger>
+            <TabsTrigger value="shared-with-me" onClick={() => setWhose('shared')}>Shared with Me</TabsTrigger>
           </TabsList>
 
           <TabsContent value="my-documents">
             <ScrollArea className="h-[60vh]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filterDocuments(myDocuments).map((doc: any) => (
-                  <Link to={`/document/${doc.id}`}>
-                    <Card key={doc.id} className='hover:bg-gray-200'>
+                {filterDocuments(docs).map((doc: Document) => (
+                  <Link to={`/document/${doc._id}`}>
+                    <Card key={doc._id} className='hover:bg-gray-200'>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium hover:underline">
-                            {doc.title}
+                            {doc.title? doc.title : 'Untitled'}
                         </CardTitle>
                         <FileText className="h-4 w-4 text-muted-foreground"/>
                       </CardHeader>
                       <CardContent>
-                        <CardDescription>Last edited {doc.lastEdited}</CardDescription>
+                        <CardDescription>Last edited: {toTime(doc.updatedAt.toString())}</CardDescription>
                       </CardContent>
                     </Card>
                   </Link>
@@ -120,18 +152,21 @@ export default function Home() {
           <TabsContent value="shared-with-me">
             <ScrollArea className="h-[60vh]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filterDocuments(sharedDocuments).map((doc: any) => (
-                  <Link to={`/document/${doc.id}`}>
-                    <Card key={doc.id} className='hover:bg-gray-200'>
+                {filterDocuments(docs).map((doc: Document) => (
+                  <Link to={`/document/${doc._id}`}>
+                    <Card key={doc._id} className='hover:bg-gray-200'>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
-                            {doc.title}
+                            {doc.title? doc.title : 'Untitled'}
                         </CardTitle>
                         <Users className="h-4 w-4 text-muted-foreground" />
                       </CardHeader>
                       <CardContent>
                         <CardDescription>
-                          Shared by {doc.sharedBy} • Last edited {doc.lastEdited}
+                          Shared by: {doc.ownerId}
+                        </CardDescription>
+                        <CardDescription>
+                          Last edited: {toTime(doc.updatedAt.toString())}
                         </CardDescription>
                       </CardContent>
                     </Card>

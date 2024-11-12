@@ -4,11 +4,12 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 export interface EditorProps {
-  onChange: (value: string) => void,
-  content?: any
+  onChange?: (value: string) => void,
+  content?: any,
+  editable?: boolean
 }
 
-const Editor: React.FC<EditorProps> = ({ onChange, content }) => {
+const Editor: React.FC<EditorProps> = ({ onChange, content, editable=true }) => {
   const colors = {
     highlight: [
       "#FFFF00", // Yellow (Most common highlight color)
@@ -51,7 +52,11 @@ const Editor: React.FC<EditorProps> = ({ onChange, content }) => {
     ]
   }
 
-  return (
+  const noToolbarModule = {
+    toolbar: false
+  }
+
+  return editable? (
     <ReactQuill 
       className='h-[720px] mt-6'
       placeholder='Hello, World!'
@@ -60,6 +65,14 @@ const Editor: React.FC<EditorProps> = ({ onChange, content }) => {
       modules={modules}
       value={content}
       onChange={onChange}
+    />
+  ) : (
+    <ReactQuill
+      className='w-full h-full'
+      theme='snow'
+      modules={noToolbarModule}
+      value={content}
+      readOnly
     />
   )
 }

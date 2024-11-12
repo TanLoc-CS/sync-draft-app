@@ -15,7 +15,7 @@ createRoot(document.getElementById('root')!).render(
       authorizationParams={{
         redirect_uri: import.meta.env.VITE_AUTH0_CALLBACK_URL,
         audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-        scope: "read:current_user update:current_user_metadata"
+        scope: "read:current_user update:current_user_metadata email profile"
       }}
     >
       <RouterProvider router={router} />

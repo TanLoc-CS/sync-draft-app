@@ -1,25 +1,17 @@
-import { Link } from "react-router-dom"
-import { useAuth0 } from "@auth0/auth0-react";
-
 import {Button} from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { EditingIcon, GroupIcon, MergeIcon, ClockIcon } from '@/assets/icons'
 import Logo from "@/components/Logo"
+import useAuth from "@/hook/useAuth";
 
 export default function OnBoarding() {
-  const { loginWithRedirect, isAuthenticated } = useAuth0();
+  const { login, signup } = useAuth();
 
-  console.log(isAuthenticated)
-
-  const handleLoginAndSignup = (where: string) => {
+  const handleLoginAndSignup = async (where: string) => {
     if (where === 'signup') {
-      loginWithRedirect({
-        authorizationParams: {
-          screen_hint: 'signup'
-        }
-      });
+      await signup();
     } else {
-      loginWithRedirect();
+      await login();
     }
   }
 
@@ -77,7 +69,7 @@ export default function OnBoarding() {
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Invite team members, assign roles, and manage permissions with ease.
+                Invite team members by sharing a link with ease.
               </CardDescription>
             </CardContent>
           </Card>

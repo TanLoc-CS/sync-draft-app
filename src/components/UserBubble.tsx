@@ -1,13 +1,13 @@
-import React from 'react'
+import useAuth from '@/hook/useAuth';
 
-export interface UserBubbleProps {
-  
-}
+export const UserBubble = ({ userId }:{ userId: string }) => {
+  const { user } = useAuth();
+  const shortenedName = userId.toString().substring(userId.length - 3, userId.length - 1)
 
-export const UserBubble = () => {
-  return (
+  return user?.sub !== userId ? 
+  (
     <div className='w-[40px] h-[40px] ml-3 bg-amber-200 flex flex-col justify-center items-center rounded-full'>
-      TLN
+      {shortenedName}
     </div>
-  )
+  ) : null;
 }
