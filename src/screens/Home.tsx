@@ -16,7 +16,7 @@ import { toTime } from '@/lib/utils';
 
 export default function Home() {
   const navigate = useNavigate();
-  const { logout, getToken } = useAuth();
+  const { logout } = useAuth();
   const { createDocument, getDocuments, documentErr } = useDocument();
   const { createUserProfile, getUserProfile, noProfile } = useProfile();
 
@@ -24,18 +24,6 @@ export default function Home() {
   const [whose, setWhose] = useState<string>('mine');
   const [reload, setReload] = useState<boolean>(false);
   const [docs, setDocs] = useState<Document[]>([]);
-  // let doc1 = automerge.from({ content: "" })
-  // doc1 = automerge.change(doc1, d => {
-  //   d.content += "<p>This is a <span style='color: red;'>test</span></p>"
-  // })
-
-  // let doc2 = automerge.from({ content: ""})
-  // doc2 = automerge.change(doc2, d => {
-  //   d.content += "<p>This is a <span style='color: blue;'>test <em>document</em></span></p>"
-  // })
-
-  // console.log(automerge.merge(doc2, doc1).content);
-
 
   useEffect(() => {
     const refresh = async () => {
@@ -79,14 +67,9 @@ export default function Home() {
   }
 
   const filterDocuments = (docs: Document[]) => {
-    //TODO: Fix filter
-    // if (!docs) {
-    //   return [];
-    // }
-    // return docs.filter((doc: Document) => 
-    //   doc.title.toLowerCase().includes(searchTerm.toLowerCase())
-    // )
-    return docs;
+    return docs.filter(doc => 
+      doc.title?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
   }
 
   return (
