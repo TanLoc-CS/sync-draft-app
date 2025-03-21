@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, FileText, Users, LogOut, Plus } from 'lucide-react';
+import { Search, FileText, Users, LogOut, Plus, Trash2Icon } from 'lucide-react';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,7 @@ import { toTime } from '@/lib/utils';
 export default function Home() {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const { createDocument, getDocuments, documentErr } = useDocument();
+  const { createDocument, getDocuments, deleteDocumentById, documentErr, loading } = useDocument();
   const { createUserProfile, getUserProfile, noProfile } = useProfile();
 
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -28,7 +28,7 @@ export default function Home() {
   useEffect(() => {
     const refresh = async () => {
       const myDocs = await getDocuments(whose);
-      console.log(myDocs)
+
       if (myDocs) {
         setDocs(myDocs);
       }
@@ -64,6 +64,11 @@ export default function Home() {
     alert('Created a new document');
     setReload(!reload);
     navigate(`/document/${newDoc._id}`)
+  }
+
+  const handleDeleteDoc = async (docId: string) => {
+    await deleteDocumentById(docId);
+    setReload(!reload);
   }
 
   const filterDocuments = (docs: Document[]) => {
@@ -110,54 +115,62 @@ export default function Home() {
             <TabsTrigger value="my-documents" onClick={() => setWhose('mine')}>My Documents</TabsTrigger>
             <TabsTrigger value="shared-with-me" onClick={() => setWhose('shared')}>Shared with Me</TabsTrigger>
           </TabsList>
-
-          <TabsContent value="my-documents">
-            <ScrollArea className="h-[60vh]">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filterDocuments(docs).map((doc: Document) => (
-                  <Link to={`/document/${doc._id}`}>
-                    <Card key={doc._id} className='hover:bg-gray-200'>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium hover:underline">
-                            {doc.title? doc.title : 'Untitled'}
-                        </CardTitle>
-                        <FileText className="h-4 w-4 text-muted-foreground"/>
-                      </CardHeader>
-                      <CardContent>
-                        <CardDescription>Last edited: {toTime(doc.updatedAt.toString())}</CardDescription>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-            </ScrollArea>
-          </TabsContent>
-          <TabsContent value="shared-with-me">
-            <ScrollArea className="h-[60vh]">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filterDocuments(docs).map((doc: Document) => (
-                  <Link to={`/document/${doc._id}`}>
-                    <Card key={doc._id} className='hover:bg-gray-200'>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            {doc.title? doc.title : 'Untitled'}
-                        </CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <CardDescription>
-                          Shared by: {doc.ownerId}
-                        </CardDescription>
-                        <CardDescription>
-                          Last edited: {toTime(doc.updatedAt.toString())}
-                        </CardDescription>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-            </ScrollArea>
-          </TabsContent>
+          {loading && <div> Loading... </div>}
+          {!loading && !docs.length && <div>No documents have been created yet.</div>}
+          {!loading && docs.length !== 0 &&
+            <>
+              <TabsContent value="my-documents">
+                <ScrollArea className="h-[60vh]">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {filterDocuments(docs).map((doc: Document) => (
+                      <Card key={doc._id}>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                          <Link to={`/document/${doc._id}`}>
+                          <CardTitle className="text-sm font-medium hover:underline">
+                              {doc.title? doc.title : 'Untitled'}
+                          </CardTitle>
+                          </Link>
+                          <span className="w-10 flex flex-row items-center justify-between space-y-0 pb-2">
+                            <FileText className="h-4 w-4 text-muted-foreground"/>
+                            <Trash2Icon className="h-4 w-4 text-muted-foreground hover:text-black hover:cursor-pointer" onClick={() => handleDeleteDoc(doc._id as string)}/>
+                          </span>
+                        </CardHeader>
+                        <CardContent>
+                          <CardDescription>Last edited: {toTime(doc.updatedAt.toString())}</CardDescription>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </TabsContent>
+              <TabsContent value="shared-with-me">
+                <ScrollArea className="h-[60vh]">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {filterDocuments(docs).map((doc: Document) => (
+                      <Link to={`/document/${doc._id}`}>
+                        <Card key={doc._id} className='hover:bg-gray-200'>
+                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">
+                                {doc.title? doc.title : 'Untitled'}
+                            </CardTitle>
+                            <Users className="h-4 w-4 text-muted-foreground" />
+                          </CardHeader>
+                          <CardContent>
+                            <CardDescription>
+                              Shared by: {doc.ownerId}
+                            </CardDescription>
+                            <CardDescription>
+                              Last edited: {toTime(doc.updatedAt.toString())}
+                            </CardDescription>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </TabsContent>
+            </>
+          }
         </Tabs>
       </div>
     </div>

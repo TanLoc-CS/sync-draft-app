@@ -108,13 +108,36 @@ const useDocument = () => {
     }
   }
 
+  const deleteDocumentById = async (docId: string) => {
+    setLoading(true);
+    setDocumentErr(null);
+
+    try {
+      const token = await getToken();
+
+      const response = await axios.delete<Document>(
+        `${baseUri}/documents/${docId}`,
+        {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }
+      )
+      console.log(`Deleted document: ${response.data._id}`);
+    } catch (error: any) {
+      console.error(`Error occurs while update doc title: ${error}`);
+      setDocumentErr(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return {
     loading,
     documentErr,
     getDocumentById,
     getDocuments,
     createDocument,
-    updateDocTitle
+    updateDocTitle,
+    deleteDocumentById
   }
 }
 
