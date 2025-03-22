@@ -37,7 +37,7 @@ const Document = () => {
   const [socket, setSocket] = useState<Socket | null>();
   const [docTitle, setDocTitle] = useState<string>('Untitled');
   const [content, setContent] = useState<string | null>();
-  const [debouncedContent, setDebouncedContent] = useState<string | null>();
+  // const [debouncedContent, setDebouncedContent] = useState<string | null>();
   const [mergeIsOpen, setMergeIsOpen] = useState<boolean>(false);
   const [selection, setSelection] = useState<{ value: string; label: string } | null>(null);
   const [onlineUsers, setOnlineUsers] = useState<string[] | null>();
@@ -58,6 +58,9 @@ const Document = () => {
       if (doc) {
         setDocTitle(doc.title);
         setContent(doc.content);
+      } else {
+        alert('Document has been deleted by the owner.')
+        navigate('/document')
       }
     }
 
@@ -158,28 +161,28 @@ const Document = () => {
       setContent(change);
     })
     return () => {
-      socketInstance.off('connect');
       socketInstance.off('online-users');
       socketInstance.off('doc-change');
+      socketInstance.off('connect');
     }
   }, [docId, user?.sub])
 
   // -----------------------------------------Event emmiters--------------------------------------------------
-  useEffect(() => {
-    const timeOut = setTimeout(() => {
-      setDebouncedContent(content);
-    }, 100);
+  // useEffect(() => {
+  //   const timeOut = setTimeout(() => {
+  //     setDebouncedContent(content);
+  //   }, 10);
 
-    return () => {
-      clearTimeout(timeOut);
-    }
-  }, [content]);
+  //   return () => {
+  //     clearTimeout(timeOut);
+  //   }
+  // }, [content]);
   
   useEffect(() => {
-    if (!socket || !debouncedContent) return;
+    if (!socket || !content) return;
 
-    socket.emit('edit-doc', { docId: docId, content: debouncedContent});
-  }, [debouncedContent, socket]);
+    socket.emit('edit-doc', { docId: docId, content: content});
+  }, [content, socket]);
 
   const leaveDoc = () => {
     if (!socket || !user?.sub) return;
@@ -370,10 +373,12 @@ const Document = () => {
         <div className='w-full h-[60px] flex flex-row justify-between items-center'>
           {/*Home + Title*/}
           <div className='w-4/5 h-[48px] flex flex-row justify-start items-center'>
-            <Button variant="ghost" size="lg">
-              <HomeIcon/>
-              <a href='/document'>Home</a>
-            </Button>
+            <a href='/document'>
+              <Button variant="ghost" size="lg">
+                <HomeIcon/>
+                Home
+              </Button>
+            </a>
             <TitleInput value={docTitle} onChange={handleTitleChange} onBlur={changeTitle}/>
           </div>
           {/*Collaborators*/}
