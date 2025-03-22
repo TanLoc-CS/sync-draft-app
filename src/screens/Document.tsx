@@ -369,7 +369,7 @@ const Document = () => {
       </Merge>
 
       {/*Right section*/}
-      <div className='w-4/5 h-full p-4 flex flex-col justify-start'>
+      <div className='w-full h-full p-4 flex flex-col justify-start'>
         <div className='w-full h-[60px] flex flex-row justify-between items-center'>
           {/*Home + Title*/}
           <div className='w-4/5 h-[48px] flex flex-row justify-start items-center'>
@@ -390,9 +390,9 @@ const Document = () => {
         {/*Editor*/}
         <Editor onChange={handleEditorChange} content={content}/>
       </div>
-      <aside/>
+      {/* <aside/> */}
         {/*Left sidebar section*/}
-      <div className='w-1/5 h-full p-4 bg-gray-100 flex flex-col justify-start'>
+      {/* <div className='w-1/5 h-full p-4 bg-gray-100 flex flex-col justify-start'>
         <div className='grow-0 w-full h-[168px] flex flex-col justify-between items-center'>
           <Button className='w-full' variant="outline" size="lg" onClick={handleReturnToMain}>
               <DocumentIcon />
@@ -442,7 +442,7 @@ const Document = () => {
             />)
           )}
         </div>
-      </div>
+      </div> */}
     </div>
   )
 };

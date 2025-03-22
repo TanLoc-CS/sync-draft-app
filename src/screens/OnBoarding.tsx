@@ -46,7 +46,7 @@ export default function OnBoarding() {
           </p>
         </section>
 
-        <section className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <section className="grid md:grid-cols-2 lg:grid-cols-2 gap-6 mb-12">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -73,7 +73,7 @@ export default function OnBoarding() {
               </CardDescription>
             </CardContent>
           </Card>
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <MergeIcon />
@@ -98,7 +98,7 @@ export default function OnBoarding() {
                 Work on your own time and sync changes when you're ready.
               </CardDescription>
             </CardContent>
-          </Card>
+          </Card> */}
         </section>
 
         <section className="text-center">
