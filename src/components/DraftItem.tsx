@@ -7,7 +7,7 @@ const DraftItem: React.FC<IDraft> = ({
   title,
   isMerged,
   createdAt,
-  content
+  // content
 }) => {
   return (
     <a 

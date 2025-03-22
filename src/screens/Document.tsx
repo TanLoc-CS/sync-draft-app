@@ -3,15 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Modal from 'react-modal';
 import Select from 'react-select';
 import { io, Socket } from 'socket.io-client';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 import * as automerge from '@automerge/automerge';
 import axios from 'axios';
-
-import { BranchIcon, CloseIcon, CompareIcon, DocumentIcon, HomeIcon, LeftArrowIcon, MergeIcon, ShareIcon } from '@/assets/icons';
+// BranchIcon, DocumentIcon, MergeIcon, ShareIcon
+import { CloseIcon, CompareIcon, HomeIcon, LeftArrowIcon } from '@/assets/icons';
 import TitleInput from '@/components/TitleInput';
 import Editor from '@/components/Editor';
 import { UserBubble } from '@/components/UserBubble';
-import DraftItem from '@/components/DraftItem';
+// import DraftItem from '@/components/DraftItem';
 import Merge from '@/components/Merge';
 import { Button } from '@/components/ui/button';
 import { Document as DocumentType } from '@/types/document';
@@ -19,8 +19,8 @@ import useDocument from '@/hook/useDocument';
 import useAuth from '@/hook/useAuth';
 import { IDraft, useLocalDB } from '@/hook/useLocalDB';
 import {Merge as TypeMerge} from '@/types/merge';
-import { toTime } from '@/lib/utils';
-import MergeItem from '@/components/MergeItem';
+// import { toTime } from '@/lib/utils';
+// import MergeItem from '@/components/MergeItem';
 
 Modal.setAppElement('#root');
 
@@ -32,7 +32,7 @@ const Document = () => {
   const navigate = useNavigate();
   const { updateDocTitle, getDocumentById, loading } = useDocument();
   const { user, getToken } = useAuth();
-  const { createDraft, openIndexedDB, getDraftsByDocId, getDraftById } = useLocalDB()
+  const { openIndexedDB, getDraftsByDocId, getDraftById } = useLocalDB() // createDraft
 
   const [socket, setSocket] = useState<Socket | null>();
   const [docTitle, setDocTitle] = useState<string>('Untitled');
@@ -47,6 +47,8 @@ const Document = () => {
   const [merges, setMerges] = useState<TypeMerge[]>();
   const [mergeViewIsOpen, setMergeViewIsOpen] = useState<boolean>(false);
   const [selectedMerge, setSelectedMerge] = useState<TypeMerge>();
+
+  console.log(drafts, merges, setSelectedMerge)
 
   useEffect(() => {
     const fetchDoc = async () => {
@@ -184,20 +186,20 @@ const Document = () => {
     socket.emit('edit-doc', { docId: docId, content: content});
   }, [content, socket]);
 
-  const leaveDoc = () => {
-    if (!socket || !user?.sub) return;
+  // const leaveDoc = () => {
+  //   if (!socket || !user?.sub) return;
 
-    socket.emit('leave-doc',  {docId: docId, userId: user.sub});
-  }
+  //   socket.emit('leave-doc',  {docId: docId, userId: user.sub});
+  // }
   // ---------------------------------------------------------------------------------------------------------
 
-  const openMergeModal = () => {
-    setMergeIsOpen(true);
-  }
+  // const openMergeModal = () => {
+  //   setMergeIsOpen(true);
+  // }
 
-  const openMergeView = () => {
-    setMergeViewIsOpen(true);
-  }
+  // const openMergeView = () => {
+  //   setMergeViewIsOpen(true);
+  // }
 
   const closeMergeModal = () => {
     setMergeIsOpen(false);
@@ -255,37 +257,37 @@ const Document = () => {
     closeMergeModal();
   }
 
-  const handleReturnToMain = () => {
-    navigate(`/document/${docId}`);
-    window.location.reload();
-  }
+  // const handleReturnToMain = () => {
+  //   navigate(`/document/${docId}`);
+  //   window.location.reload();
+  // }
 
-  const handleShare = () => {
-    if (!docId) {
-      alert('Failed to share link! Please try again later...');
-      return;
-    }
-    navigator.clipboard.writeText(`http://localhost:5173/document/${docId}`);
-    alert('Copied link to this document!');
-  }
+  // const handleShare = () => {
+  //   if (!docId) {
+  //     alert('Failed to share link! Please try again later...');
+  //     return;
+  //   }
+  //   navigator.clipboard.writeText(`http://localhost:5173/document/${docId}`);
+  //   alert('Copied link to this document!');
+  // }
 
-  const handleCreateDraft = async () => {
-    const newDraftId = uuidv4();
-    if (!user?.sub) {
-      alert('Failed to create new draft! Please try again later...');
-      return;
-    }
-    const db = await openIndexedDB(user.sub);
+  // const handleCreateDraft = async () => {
+  //   const newDraftId = uuidv4();
+  //   if (!user?.sub) {
+  //     alert('Failed to create new draft! Please try again later...');
+  //     return;
+  //   }
+  //   const db = await openIndexedDB(user.sub);
 
-    if (!db || !docId) {
-      alert('Failed to create new draft! Please try again later...');
-      return;
-    }
+  //   if (!db || !docId) {
+  //     alert('Failed to create new draft! Please try again later...');
+  //     return;
+  //   }
 
-    await createDraft(db, docId, newDraftId, content || '');
-    navigate(`/draft/${docId}/${newDraftId}`);
-    window.location.reload();
-  }
+  //   await createDraft(db, docId, newDraftId, content || '');
+  //   navigate(`/draft/${docId}/${newDraftId}`);
+  //   window.location.reload();
+  // }
 
   return (
     <div className='container h-screen flex flex-row'>
