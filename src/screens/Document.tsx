@@ -25,8 +25,8 @@ import {Merge as TypeMerge} from '@/types/merge';
 Modal.setAppElement('#root');
 
 const Document = () => {
-  const socketUri = process.env.VITE_SOCKET_ENDPOINT || 'ws://localhost:3030/';
-  const apiUri = process.env.VITE_API_ENDPOINT || 'http://localhost:3030/api';
+  const socketUri = import.meta.env.VITE_SOCKET_ENDPOINT || 'ws://sync-draft-server.onrender.com';
+  const apiUri = import.meta.env.VITE_API_ENDPOINT || 'https://sync-draft-server.onrender.com/api';
 
   const { docId } = useParams();
   const navigate = useNavigate();
