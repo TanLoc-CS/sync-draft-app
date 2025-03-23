@@ -14,7 +14,8 @@ createRoot(document.getElementById('root')!).render(
       clientId={import.meta.env.VITE_AUTH0_CLIENT_ID || ''}
       authorizationParams={{
         redirect_uri: import.meta.env.VITE_AUTH0_CALLBACK_URL,
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+        scope: "openid email profile"
       }}
     >
       <RouterProvider router={router} />
